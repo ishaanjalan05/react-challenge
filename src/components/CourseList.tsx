@@ -5,10 +5,11 @@ const CourseList = ({ courses }: CourseProps) =>(
     <ul>
       {Object.entries(courses).map(([id, c]) => (
         <li key={id}>
-          {id} — {c.title} ({c.term}, CS {c.number}) — {c.meets}
+          {c.term} CS {c.number}: {c.title}
         </li>
       ))}
     </ul>
 );
 
 export default CourseList;
+
