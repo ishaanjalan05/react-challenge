@@ -1,15 +1,14 @@
-type Course = { term: string; number: string; meets: string; title: string };
-type CourseProps = { courses: Record<string, Course> };
 
-const CourseList = ({ courses }: CourseProps) =>(
-    <ul>
+import CourseCard, { type Course } from "./CourseCard";
+
+type Props = { courses: Record<string, Course> };
+
+const CourseList = ({ courses }: Props) => (
+    <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-6 px-4">
       {Object.entries(courses).map(([id, c]) => (
-        <li key={id}>
-          {c.term} CS {c.number}: {c.title}
-        </li>
+        <CourseCard key={id} id={id} course={c} />
       ))}
-    </ul>
+    </div>
 );
 
 export default CourseList;
-
