@@ -1,9 +1,8 @@
-// src/App.tsx
 import { useEffect, useState } from "react";
 import Banner from "./components/Banner";
-import CourseList from "./components/CourseList";
+import TermPage from "./components/TermPage";
+import type { Course } from "./components/CourseCard";
 
-type Course = { term: string; number: string; meets: string; title: string };
 type Schedule = { title: string; courses: Record<string, Course> };
 
 const DATA_URL =
@@ -21,7 +20,7 @@ const app = () => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const json: Schedule = await r.json();
         if (alive) setSchedule(json);
-      } catch (e: unknown) {
+      } catch (e) {
         if (alive) setError((e as Error).message);
       }
     })();
@@ -32,10 +31,10 @@ const app = () => {
   if (!schedule) return <p className="p-6">Loading…</p>;
 
   return (
-    <>
+    <main className="w-full">
       <Banner title={schedule.title} />
-      <CourseList courses={schedule.courses} />
-    </>
+      <TermPage courses={schedule.courses} />
+    </main>
   );
 };
 
