@@ -47,13 +47,20 @@ export default function CourseList({ courses, term, selectedIds, toggleSelected 
       <Modal isOpen={!!editingId} onClose={closeForm}>
         {editingCourse && (
           <CourseForm
-            initialTitle={editingCourse.title}
-            initialMeets={editingCourse.meets}
+            initial={{
+              title: editingCourse.title,
+              term: editingCourse.term as "Fall" | "Winter" | "Spring" | "Summer",
+              number: editingCourse.number,
+              meets: editingCourse.meets,
+            }}
             onCancel={closeForm}
-            // onSubmit is intentionally a no-op; provided for future use
           />
         )}
       </Modal>
     </>
   );
 }
+
+
+
+
