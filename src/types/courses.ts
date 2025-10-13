@@ -62,8 +62,8 @@ export const isValidMeets = (meets: string): boolean => {
 export const courseSchema = z.object({
   title: z.string().trim().min(2, "title must be at least 2 characters"),
   term: z.enum(["Fall", "Winter", "Spring", "Summer"], {
-    errorMap: () => ({ message: "term must be Fall, Winter, Spring, or Summer" }),
-  }),
+  message: "term must be Fall, Winter, Spring, or Summer",
+}),
   number: z
     .string()
     .regex(/^\d{3}(-\d+)?$/, 'number must be like "213" or "213-2"'),
@@ -76,3 +76,6 @@ export const courseSchema = z.object({
 
 export type CourseFormData = z.infer<typeof courseSchema>;
 export const courseResolver = zodResolver(courseSchema);
+
+
+
