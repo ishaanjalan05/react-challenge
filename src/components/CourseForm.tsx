@@ -1,29 +1,44 @@
 import { useForm, type SubmitHandler, type SubmitErrorHandler } from "react-hook-form";
 import { courseResolver, type CourseFormData } from "../types/courses";
+import { updateCourse } from "../utilities/firebase";
 
 type Props = {
-  initial: CourseFormData;     // prefill with course data
+  id: string;                 // course ID being edited (e.g., "F101")
+  initial: CourseFormData;    // pre-filled values
   onCancel: () => void;
+  onSaved?: () => void;       // optional: close modal / toast
 };
 
-export default function CourseForm({ initial, onCancel }: Props) {
-  const {
+export default function CourseForm({ id, initial, onCancel, onSaved }: Props) {
+    const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid, isDirty },
+    reset,
   } = useForm<CourseFormData>({
     defaultValues: initial,
     mode: "onChange",
     resolver: courseResolver,
   });
 
-  const onSubmit: SubmitHandler<CourseFormData> = async (_data) => {
-    // Spec: do nothing on submit (no persistence)
-    // await new Promise(r => setTimeout(r, 300)); // (optional) simulate delay
+  const onSubmit: SubmitHandler<CourseFormData> = async (data) => {
+    // Build a strongly-typed patch so "term" stays a narrow union
+    const patch: Partial<CourseFormData> = {
+      ...(data.title  !== initial.title  ? { title:  data.title  } : {}),
+      ...(data.term   !== initial.term   ? { term:   data.term   } : {}),
+      ...(data.number !== initial.number ? { number: data.number } : {}),
+      ...(data.meets  !== initial.meets  ? { meets:  data.meets  } : {}),
+    };
+
+    if (Object.keys(patch).length === 0) { onCancel(); return; }
+
+    await updateCourse(id, patch);
+    reset(data);
+    onSaved?.();
   };
 
   const onError: SubmitErrorHandler<CourseFormData> = () => {
-    // optional: toast/log
+    // nothing special: RHF will show inline messages already
   };
 
   const field = "mt-1 w-full rounded border p-2";
@@ -73,8 +88,13 @@ export default function CourseForm({ initial, onCancel }: Props) {
         <button type="button" className="rounded-md border px-3 py-1" onClick={onCancel}>
           Cancel
         </button>
-        <button type="submit" className="rounded-md border px-3 py-1" disabled={isSubmitting}>
-          Save (no-op)
+        <button
+          type="submit"
+          className="rounded-md border px-3 py-1"
+          disabled={isSubmitting || !isValid || !isDirty}
+          title={!isValid ? "Fix errors first" : !isDirty ? "No changes" : ""}
+        >
+          Submit
         </button>
       </div>
     </form>

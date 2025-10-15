@@ -44,19 +44,22 @@ export default function CourseList({ courses, term, selectedIds, toggleSelected 
       </div>
 
       {/* Edit form in a modal */}
-      <Modal isOpen={!!editingId} onClose={closeForm}>
-        {editingCourse && (
-          <CourseForm
-            initial={{
-              title: editingCourse.title,
-              term: editingCourse.term as "Fall" | "Winter" | "Spring" | "Summer",
-              number: editingCourse.number,
-              meets: editingCourse.meets,
-            }}
-            onCancel={closeForm}
-          />
-        )}
-      </Modal>
+          <Modal isOpen={!!editingId} onClose={closeForm}>
+      {editingCourse && (
+        <CourseForm
+          id={editingId!}
+          initial={{
+            title: editingCourse.title,
+            term: editingCourse.term as "Fall" | "Winter" | "Spring" | "Summer",
+            number: editingCourse.number,
+            meets: editingCourse.meets,
+          }}
+          onCancel={closeForm}
+          onSaved={closeForm}
+        />
+      )}
+    </Modal>
+
     </>
   );
 }

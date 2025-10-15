@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-
+import { update } from "firebase/database";
 // 1) Paste your project's Web App config from Firebase console:
 //    Firebase console → Project Settings → General → Your Apps → Web App → "Config"
 const firebaseConfig = {
@@ -44,4 +44,16 @@ export function useDataQuery<T>(path: string): [T | undefined, boolean, Error | 
   }, [path]);
 
   return [data, loading, error];
+}
+
+export { db };
+
+// Update only the changed fields of a course
+export async function updateCourse(
+  courseId: string,
+  patch: Partial<{ title: string; term: string; number: string; meets: string }>
+) {
+  // writes to /schedule/courses/{courseId}
+  const path = `/schedule/courses/${courseId}`;
+  await update(ref(db, path), patch);
 }
