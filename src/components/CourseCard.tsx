@@ -1,3 +1,4 @@
+// src/components/CourseCard.tsx
 export type Course = { term: string; number: string; meets: string; title: string };
 
 type Props = {
@@ -6,23 +7,25 @@ type Props = {
   selected: boolean;
   disabled: boolean;
   onToggle: (id: string) => void;
-  onEdit: (id: string) => void;   // NEW
+  onEdit: (id: string) => void;
+  canEdit?: boolean; // NEW
 };
 
-export default function CourseCard({ id, course, selected, disabled, onToggle, onEdit }: Props) {
+export default function CourseCard({ id, course, selected, disabled, onToggle, onEdit, canEdit }: Props) {
   const canToggle = selected || !disabled;
 
   return (
     <div className="relative">
-      {/* Edit button in top-right; do not toggle selection when clicking it */}
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); onEdit(id); }}
-        className="absolute right-2 top-2 rounded-md border bg-white/90 px-2 py-0.5 text-xs"
-        aria-label="Edit course"
-      >
-        Edit
-      </button>
+      {canEdit && ( // ← only show to signed-in users
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onEdit(id); }}
+          className="absolute right-2 top-2 rounded-md border bg-white/90 px-2 py-0.5 text-xs"
+          aria-label="Edit course"
+        >
+          Edit
+        </button>
+      )}
 
       <button
         type="button"

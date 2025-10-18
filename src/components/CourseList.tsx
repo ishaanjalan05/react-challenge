@@ -1,8 +1,10 @@
+// src/components/CourseList.tsx
 import { useState } from "react";
 import CourseCard, { type Course } from "./CourseCard";
 import { conflictsWithAny } from "../utilities/conflicts";
 import Modal from "./Modal";
 import CourseForm from "./CourseForm";
+import { useAuthState } from "../utilities/firebase"; // NEW
 
 type Term = "Fall" | "Winter" | "Spring";
 
@@ -15,11 +17,10 @@ type Props = {
 
 export default function CourseList({ courses, term, selectedIds, toggleSelected }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const { isAuthenticated } = useAuthState(); // NEW
 
   const entries = Object.entries(courses).filter(([, c]) => c.term === term);
-
   const closeForm = () => setEditingId(null);
-
   const editingCourse = editingId ? courses[editingId] : null;
 
   return (
@@ -37,33 +38,28 @@ export default function CourseList({ courses, term, selectedIds, toggleSelected 
               selected={selected}
               disabled={disabled}
               onToggle={toggleSelected}
-              onEdit={setEditingId}       // pass setter directly
+              onEdit={setEditingId}
+              canEdit={isAuthenticated} // ← only show Edit when signed in
             />
           );
         })}
       </div>
 
-      {/* Edit form in a modal */}
-          <Modal isOpen={!!editingId} onClose={closeForm}>
-      {editingCourse && (
-        <CourseForm
-          id={editingId!}
-          initial={{
-            title: editingCourse.title,
-            term: editingCourse.term as "Fall" | "Winter" | "Spring" | "Summer",
-            number: editingCourse.number,
-            meets: editingCourse.meets,
-          }}
-          onCancel={closeForm}
-          onSaved={closeForm}
-        />
-      )}
-    </Modal>
-
+      <Modal isOpen={!!editingId} onClose={closeForm}>
+        {editingCourse && (
+          <CourseForm
+            id={editingId!}
+            initial={{
+              title: editingCourse.title,
+              term: editingCourse.term as "Fall" | "Winter" | "Spring" | "Summer",
+              number: editingCourse.number,
+              meets: editingCourse.meets,
+            }}
+            onCancel={closeForm}
+            onSaved={closeForm}
+          />
+        )}
+      </Modal>
     </>
   );
 }
-
-
-
-
