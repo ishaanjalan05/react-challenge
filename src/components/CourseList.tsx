@@ -4,7 +4,7 @@ import CourseCard, { type Course } from "./CourseCard";
 import { conflictsWithAny } from "../utilities/conflicts";
 import Modal from "./Modal";
 import CourseForm from "./CourseForm";
-import { useAuthState } from "../utilities/firebase"; // NEW
+import { useIsAdmin } from "../utilities/profile"; // ← change
 
 type Term = "Fall" | "Winter" | "Spring";
 
@@ -17,7 +17,7 @@ type Props = {
 
 export default function CourseList({ courses, term, selectedIds, toggleSelected }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const { isAuthenticated } = useAuthState(); // NEW
+  const { isAdmin } = useIsAdmin(); // ← admin only
 
   const entries = Object.entries(courses).filter(([, c]) => c.term === term);
   const closeForm = () => setEditingId(null);
@@ -39,7 +39,7 @@ export default function CourseList({ courses, term, selectedIds, toggleSelected 
               disabled={disabled}
               onToggle={toggleSelected}
               onEdit={setEditingId}
-              canEdit={isAuthenticated} // ← only show Edit when signed in
+              canEdit={isAdmin} // ← only admins see the button
             />
           );
         })}
